@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-require('dotenv');
+require('dotenv').config();
 const app = express();
 const { MongoClient, ServerApiVersion } = require('mongodb');
 
@@ -14,7 +14,7 @@ app.use(express.json());
 
 
 // Mongodb Code ----------------------
-const uri = "mongodb+srv://express_server:cdsKZa6iXypKs0Ex@cluster0.q1ppz51.mongodb.net/?retryWrites=true&w=majority";
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.q1ppz51.mongodb.net/?retryWrites=true&w=majority`;
 
 
 const client = new MongoClient(uri, {
@@ -30,20 +30,31 @@ async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         // await client.connect();
         // Send a ping to confirm a successful connection
+        await client.db("bistro_boss_db").command({ ping: 1 });
 
-        // Db Connect----------------
-        const db = client.db("express_server");
-        const allPlayCollection = db.collection("express_server")
+        // Db Connect and Collection----------------
+        const db = client.db("bistro_boss_db");
+        const menuCollection = db.collection("menu");
+        const reviewCollection = db.collection("revew");
+        const allChefRecomand = db.collection("chef_recomand");
 
-        app.get('/allPlay', async (req, res) => {
-            const play = await allPlayCollection
-                .find({})
-                .toArray();
-            res.send(play);
+
+
+        // All Get Oparation Code Here----------------
+        app.get('/menu', async (req, res) => {
+            const result = await menuCollection.find().toArray();
+            res.send(result)
+        })
+
+        app.get('/review', async (req, res) => {
+            const result = await reviewCollection.find().toArray();
+            res.send(result)
         })
 
 
-        await client.db("express_server").command({ ping: 1 });
+
+
+
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
         // Ensures that the client will close when you finish/error
@@ -51,6 +62,8 @@ async function run() {
     }
 }
 run().catch(console.dir);
+
+
 
 // Local Cide ---------------------
 app.get('/', (req, res) => {
