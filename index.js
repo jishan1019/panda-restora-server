@@ -37,10 +37,12 @@ async function run() {
         const menuCollection = db.collection("menu");
         const reviewCollection = db.collection("revew");
         const allChefRecomand = db.collection("chef_recomand");
+        const cart_collection = db.collection("carts");
 
 
 
         // All Get Oparation Code Here----------------
+
         app.get('/menu', async (req, res) => {
             const result = await menuCollection.find().toArray();
             res.send(result)
@@ -51,6 +53,31 @@ async function run() {
             res.send(result)
         })
 
+        app.get('/chefRecomand', async (req, res) => {
+            const result = await allChefRecomand.find().toArray();
+            res.send(result)
+        })
+
+        app.get('/carts', async (req, res) => {
+            const email = req.query.email;
+            if (!email) {
+                res.send([])
+            } else {
+                const query = { email: email };
+                const result = await cart_collection.find(query).toArray();
+                res.send(result)
+            }
+        })
+
+
+        // All Post Oparation Code Here----------------
+
+        app.post('/carts', async (req, res) => {
+            const item = req.body;
+            console.log(item);
+            const result = await cart_collection.insertOne(item);
+            res.send(result)
+        })
 
 
 
