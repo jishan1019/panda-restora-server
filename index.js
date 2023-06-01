@@ -35,6 +35,16 @@ async function run() {
     const reviewCollection = db.collection("revew");
     const allChefRecomand = db.collection("chef_recomand");
     const cart_collection = db.collection("carts");
+    const userCollection = db.collection("users");
+
+    // Admin All Oparation Code Here--------------
+
+    // Post Create User
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      const result = await userCollection.insertOne(user);
+      res.send(result);
+    });
 
     // All Get Oparation Code Here----------------
 
