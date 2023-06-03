@@ -39,23 +39,37 @@ async function run() {
 
     // Admin All Oparation Code Here--------------
 
-    // Post Create User
+    // User All Card Oparatrion--------------------------
+    app.get("/users", async (req, res) => {
+      const result = await userCollection.find().toArray();
+      res.send(result);
+    });
+
     app.post("/users", async (req, res) => {
       const user = req.body;
-      console.log(user);
-
       const query = { email: user.email };
       const existingUser = await userCollection.findOne(query);
       if (existingUser) {
         return res.send({ massage: "User Alrady Exist" });
       }
-
       const result = await userCollection.insertOne(user);
       res.send(result);
     });
 
-    // All Get Oparation Code Here----------------
+    app.patch("/users/admin/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          role: "admin",
+        },
+      };
 
+      const result = await userCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
+    // All Get Oparation Code Here----------------
     app.get("/menu", async (req, res) => {
       const result = await menuCollection.find().toArray();
       res.send(result);
